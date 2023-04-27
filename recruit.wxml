@@ -1,0 +1,799 @@
+<!-- <view class="debug_wrap" style="display:block;">
+<button type="primary" bindtap="givemerandom">随机数</button>
+    <button type="primary" bindtap="ceshigailv">测试SABC</button>
+    <button type="primary" bindtap="ceshigailv_2">测试50%概率</button>
+    <button type="default" bindtap="ceshigailv_reset">清零</button>
+    <button type="default" bindtap="ceshigailv_look">显示数组</button>
+    <button type="default" bindtap="restart_pro">重启</button>
+</view> -->
+
+<!-- loading -->
+<view class="loading_wrap ease3 {{loadcomplete}}">
+    <view class="loading_box">
+        <view class="loading_spinner">
+            <image class="img_bg" mode='scaleToFill' src='../../images/loading_bg.png'></image>
+            <image class="img_spinner" mode='scaleToFill' src='../../images/loading.png'></image>
+        </view>
+        <view class="loading_text">{{loadtext}}</view>
+        <view class='btns'>
+            <view class='btn ease1' hover-class='btn_active' wx:if='{{loadfailed}}' bindtap='onrefresh'>
+                <image class='image' mode='widthFix' src='../../images/btn_bg.png'></image>
+                <view class='text text_c'>点击重试</view>
+            </view>
+        </view>
+    </view>
+</view>
+<view class='loadingimages'>
+    <block wx:for="{{urls}}" wx:for-index="index" wx:key="id" wx:for-item="itemName">
+        <image mode='widthFix' src='{{itemName.url}}' bindload='imgloading' binderror='imgloadingerror'></image>
+    </block>
+</view>
+
+<!-- 意外错误 -->
+<view class="loading_wrap ease3" wx:if="{{deviceError}}">
+    <view class="loading_box">
+        <view class="loading_spinner">
+            <image class="img_bg" mode='scaleToFill' src='../../images/close.png'></image>
+            <image class="img_spinner" mode='scaleToFill' src='../../images/loading.png'></image>
+        </view>
+        <view class="loading_text">意外错误！请重启小程序<view style="font-size: 14px; line-height: 14px;">（可能出现了页面显示问题和图像错乱问题）</view></view>
+        <view class='btns'>
+            <view class='btn ease1' hover-class='btn_active' bindtap='iknow'>
+                <image class='image' mode='widthFix' src='../../images/btn_bg_blue.png'></image>
+                <view class='text text_c'>忽略</view>
+            </view>
+        </view>
+    </view>
+    <view style="position:absolute; right: 60px; top: 50px; transform: rotateZ(-90deg);">
+        <image mode="widthFix" style=" width: 48px; animation:zhishi .5s ease-in-out infinite; " src="../../images/small_hand.png"></image>
+    </view>
+    <view style="position: absolute; top: 100px; right: 30px; font-size: 20px;">重启小程序</view>
+</view>
+
+
+<!-- 视图容器 start ，用于适配刘海屏等异形屏 -->
+<view class='viewcontainer {{allscreen}}' style='left:{{statusbarheight}}px; right:{{statusbarheight}}px;font-family:{{fontfamily}} !important; --rpxratio:{{rapxratio}} '>
+
+    <!-- 背景图 -->
+    <image class='bg' src='../../images/bg.jpg' mode="aspectFill"></image>
+
+
+    <!-- 中央主体 -->
+    <view class='box' style='font-family:{{fontfamily}} !important; transform:scale({{fixratio}});'>
+        <!-- part 01 -->
+        <view class='tishi'>
+            <block wx:if="{{cliktype == 'danchou'}}">
+                <image mode='scaleToFill' class='img tishi_01' src='../../images/tishi_01.png'></image>
+            </block>
+            <block wx:if="{{cliktype == 'shilian'}}">
+                <image mode='scaleToFill' class='img tishi_10' src='../../images/tishi_10.png'></image>
+            </block>
+        </view>
+
+        <!-- part 02 碎片输出容器 -->
+        <view class='resultlist_wrap {{cliktype}}' hidden="{{!loadcomplete}}">
+            <image mode='scaleToFill' class='resultlist_wrap_bg' src='../../images/resultlist_bg.png' hidden="{{!cliktype}}"></image>
+            <view class='firsttext fadeInBig animated' wx:if="{{cliktype==''}}">
+                <view class="recruittitle_wrap fudong">
+                    <image mode="widthFix" class="recruittitle" src="../../images/recruittitle.png"></image>
+                    <image mode="widthFix" class="recruittitle fadeOutBig" style="mix-blend-mode: screen;" src="../../images/recruittitle.png"></image>
+                </view>
+                <view class="txt txt-shw-black animated fadeIn">仅供娱乐 请勿当真</view>
+            </view>
+            <scroll-view class='resultlist_scroll' scrollTop="{{list_scrollTop}}"  scroll-y="true" hidden="{{cliktype==''}}" style="--delaytime:{{delaytime}}">
+                <view class="resultlist">
+                <block wx:for="{{items}}" wx:key="index" wx:for-index="index" wx:for-item="itemName">
+                    <template is="item_suipian" data="{{urlName:url_charactors,delaytime:delaytime,index:index,...itemName}}" />
+                </block>
+                </view>
+            </scroll-view>
+        </view>
+
+        <!-- part 03 按钮容器 -->
+        <view class='btns' hidden='{{animating}}'>
+            <button class='btn ease1' hover-class='btn_active' bindtap='reset' hidden="{{cliktype==''}}" disabled="{{cliktype==''}}">
+                <image class='image' mode='scaleToFill' src='../../images/btn_bg_grey.png'></image>
+                <image class='image' mode='scaleToFill' src='../../images/btn_bg.png' hidden="{{cliktype==''}}"></image>
+                <view class='text text_c'>重置</view>
+            </button>
+            <button class='btn ease1' hover-class='btn_active' bindtap='clik'>
+                <image class='image' mode='scaleToFill' src='../../images/btn_bg.png'></image>
+                <image class='icon' mode='aspectFit' src='../../images/juanzhou_gaoji.png'></image>
+                <view class='badge'>1</view>
+                <view class='text'>招募1次</view>
+            </button>
+            <button class='btn ease1' hover-class='btn_active' bindtap='clik10'>
+                <image class='image' mode='scaleToFill' src='../../images/btn_bg.png'></image>
+                <image class='icon' mode='aspectFit' src='../../images/juanzhou_gaoji.png'></image>
+                <view class='badge'>10</view>
+                <view class='text'>招募10次</view>
+            </button>
+            <button class='btn ease1' hover-class='btn_active' bindtap='clik100' hidden="{{!isOpen_100clik}}">
+                <image class='image' mode='scaleToFill' src='../../images/btn_bg.png'></image>
+                <image class='icon' mode='aspectFit' src='../../images/juanzhou_gaoji.png'></image>
+                <view class='badge'>100</view>
+                <view class='text'>招募100次</view>
+                <view class="btn_corner_tag"><image class="tag_image" mode="aspectFill" src="../../images/tag_beta.png"></image></view>
+            </button>
+        </view>
+        <view class='bisongbox' hidden='{{animating}}'>
+            <block wx:if='{{bisong_type == "num"}}'>
+                <view class='bisong txt-shw-black'>
+                    再招募<text class='text'>{{bisong_num}}</text>次后，下次招募必送S级忍者碎片
+                </view>
+            </block>
+            <block wx:if='{{bisong_type == "now"}}'>
+                <view class='bisong txt-shw-black'>
+                    本次招募必送S级忍者碎片
+                </view>
+            </block>
+        </view>
+
+    </view>
+
+
+
+
+    <!-- 统计 -->
+    <view class="tongjilist_wrap ease3 {{tongjilist_wrap_hidden? 'hide':' '}}">
+        <view class='tongjilist'>
+            <view class="li lilevel">
+                <button class="v_level btn ease1" hover-class="btn_active" data-value="pop_setting_hidden" data-tabcurrent="3" bindtap="openpop" disabled="{{animating}}">
+                    <text class="vv">V{{v_current}}</text>
+                    <view class="zhishi">
+                        <image class="small_hand" mode="widthFix" src="../../images/small_hand.png" hidden="{{animating}}"></image>
+                        <text hidden="{{animating}}">设置等级</text>
+                    </view>
+                </button>
+                <!-- 加速状态指示 -->
+                <!-- <button class="status_speedup btn ease1" hover-class="btn_active">
+                    <image mode="widthFix" class="icon" style="animation-duration:{{btn_speedup_disabled?.6:3.2}}s" src="../../images/icon_shoulijian.png"></image>
+                    <text class="txt"></text>
+                </button> -->
+            </view>
+            <view class="libt"><image class="d" mode="widthFix" src="../../images/bullet.png"></image>累计消耗</view>
+            <view class='li'>
+                <view class='dl'>
+                    <image class="num_bg" mode="widthFix" src="../../images/num_bg.png"></image>
+                    <image class='icon dt' mode='aspectFit' src='../../images/juanzhou_gaoji.png'></image>
+                    <view class='dd'>
+                        <view class='p p_title'>招募次数</view>
+                        <view class='p txt-shw-black'>{{num_count}}</view>
+                    </view>
+                </view>
+            </view>
+            <view class='li'>
+                <view class='dl'>
+                    <image class="num_bg" mode="widthFix" src="../../images/num_bg.png"></image>
+                    <image class='icon dt' mode='aspectFit' src='../../images/coin.png'></image>
+                    <view class='dd'>
+                        <view class='p p_title'>消耗金币</view>
+                        <view class='p txt-shw-black'>{{num_count*168}}</view>
+                    </view>
+                </view>
+            </view>
+            <view class="libt"><image class="d" mode="widthFix" src="../../images/bullet.png"></image>获得统计</view>
+            <view class='li li_newninja' hidden="{{!isGaozhaofanli_s}}">
+                <view class="infos txt-shw-black">
+                    <view class="suipianname">{{ninjalist_s[0].suipianname}}<text class="yellow" hidden="{{num_s_fanli == 0}}">(赠+{{num_s_fanli}})</text></view>
+                    <view class="bar_con">
+                        <view class="bar" style="width: {{num_s/ninjalist_s[0].suipianneed*100}}% "></view>
+                        <view class="txt"><text class="yellow">{{num_s}}</text>/{{ninjalist_s[0].suipianneed}}</view>
+                    </view>
+                    <view class="btns share_wrap" hidden="{{num_s < ninjalist_s[0].suipianneed}}">
+                        <button class="btn btn_share ease1" hover-class="btn_active" open-type="share" data-name="{{ninjalist_s[0].ninjaname}}" data-rank="s" bindtap="shareAction">
+                            <image class="bg" src="../../images/btn_bg.png"></image>
+                            <view>炫耀</view>
+                        </button>
+                    </view>
+                </view>
+                <view class="icon icon_a_new">
+                    <image class='image_bg' mode='widthFix' src='../../images/piece_bg_default.png'></image>
+                    <view class="img img" style="background-image:url({{url_charactors}});background-position:{{ninjalist_s[0].p_x}}rpx {{ninjalist_s[0].p_y}}rpx;"></view>
+                    <view class='fg'>
+                        <image class='image_fg' mode='widthFix' src='../../images/piece_fg_default.png'></image>
+                    </view>
+                    <!-- <image mode="widthFix" class="corner_tag" src="../../images/tag_new.png"></image> -->
+                </view>
+            </view>
+            <view class='li li_newninja' hidden="{{!isGaozhaofanli_a}}">
+                <view class="infos txt-shw-black">
+                    <view class="suipianname">{{ninjalist_a[0].suipianname}}<text class="yellow" hidden="{{num_a_fanli == 0}}">(赠+{{num_a_fanli}})</text></view>
+                    <view class="bar_con">
+                        <view class="bar" style="width: {{num_a_new/ninjalist_a[0].suipianneed*100}}% "></view>
+                        <view class="txt"><text class="yellow">{{num_a_new}}</text>/{{ninjalist_a[0].suipianneed}}</view>
+                    </view>
+                    <view class="btns share_wrap" hidden="{{num_a_new < ninjalist_a[0].suipianneed}}">
+                        <button class="btn btn_share ease1" hover-class="btn_active" open-type="share" data-name="{{ninjalist_a[0].ninjaname}}" data-rank="a" bindtap="shareAction">
+                            <image class="bg" src="../../images/btn_bg.png"></image>
+                            <view>炫耀</view>
+                        </button>
+                    </view>
+                </view>
+                <view class="icon icon_a_new">
+                    <image class='image_bg' mode='widthFix' src='../../images/piece_bg_default.png'></image>
+                    <view class="img img" style="background-image:url({{url_charactors}});background-position:{{ninjalist_a[0].p_x}}rpx {{ninjalist_a[0].p_y}}rpx;"></view>
+                    <view class='fg'>
+                        <image class='image_fg' mode='widthFix' src='../../images/piece_fg_default.png'></image>
+                    </view>
+                    <!-- <image mode="widthFix" class="corner_tag" src="../../images/tag_new.png"></image> -->
+                </view>
+            </view>
+            <view class="li liother">
+                <view class='dl' wx:for="{{[{rank:'s',num:num_s},{rank:'a',num:num_a},{rank:'b',num:num_b},{rank:'c',num:num_c}]}}" wx:for-item="item" wx:key="index">
+                    <image class="num_bg" mode="widthFix" src="../../images/num_bg_red.png"></image>
+                    <image class='icon dt' mode='aspectFit' src='../../images/{{item.rank}}.png'></image>
+                    <view class='dd'>
+                        <view class='p txt-shw-black'>{{item.num}}</view>
+                    </view>
+                </view>
+            </view>
+        </view>
+
+    </view>
+    <view class="tongjilist_swith_container" hidden='{{animating}}'>
+        <view class='tongjilist_switch ease1 btn txt-shw-black {{tongjilist_wrap_hidden?"opa":""}}' hover-class="btn_active" bindtap='tongjilist_switch'>
+            <block wx:if="{{!tongjilist_wrap_hidden}}">
+                <image mode='scaleToFill' class='icon icon_back' src='../../images/back.png'></image>
+                <text>收起</text>
+            </block>
+            <block wx:if="{{tongjilist_wrap_hidden}}">
+                <text>展开</text>
+                <image mode='scaleToFill' class='icon icon_front' src='../../images/front.png'></image>
+            </block>
+        </view>
+    </view>
+
+
+
+    <!-- 界面图标 -->
+    <view class="status_con"><text class="tag_yincangjizhi" hidden="{{!isYincangjizhi}}">隐藏机制已开启</text></view>
+    <view class="adContainer">
+        <ad-custom unit-id="adunit-87377db152720f33"></ad-custom>
+    </view>
+    <view class="thebtns ease3 {{tongjilist_wrap_hidden? 'hide':' '}}" hidden='{{animating}}'>
+        <button class="btn btn_info" hover-class='btn_active' data-value="pop_gift_s_hidden" bindtap="openpop" hidden="{{!isGaozhaofanli_s}}">
+            <image class='icon icon_info' mode='scaleToFill' src='../../images/icon_gift.png'></image>
+            <view class="txt txt-shw-black">S返利</view>
+        </button>
+        <button class="btn btn_info" hover-class='btn_active' data-value="pop_gift_a_hidden" bindtap="openpop" hidden="{{!isGaozhaofanli_a}}">
+            <image class='icon icon_info' mode='scaleToFill' src='../../images/icon_gift.png'></image>
+            <view class="txt txt-shw-black">A返利</view>
+        </button>
+        <button class="btn btn_info" hover-class='btn_active' data-value="pop_setting_hidden" data-tabcurrent="0" bindtap="openpop">
+            <image class='icon icon_info' mode='scaleToFill' src='../../images/setting.png'></image>
+            <view class="txt txt-shw-black">设置</view>
+        </button>
+    </view>
+
+
+
+    <!-- 恭喜 -->
+    <view class="congratulation_wrap" animation="{{animation_gongxi}}">
+        <image class="bg" mode="scaleToFill" src="../../images/tips_bg.png"></image>
+        <view class="congratulation">恭喜你获得 <text class='text'>{{gongxi_list[0].name}}×{{gongxi_list[0].num}}</text></view>
+    </view>
+    <!-- toast -->
+    <view class="toast_wrap ease3 {{toast_animation_ing}}">
+        <view class="toast">
+            <image class="bg" mode="scaleToFill" src="../../images/tips_bg.png"></image>
+            <view class="txt">{{toast_txt}}</view>
+        </view>
+    </view>
+
+    <!-- 弹窗 设置 -->
+    <view class='pop_mask ease3 {{pop_setting_hidden? "hide":" "}}'></view>
+    <view class='pop pop_big pop_setting ease3 {{pop_setting_hidden? "hide":" "}}'>
+        <image mode="widthFix" class="title_bg_cloud" src="../../images/title_bg_cloud.png"></image>
+        <image mode="widthFix" class="pop_bg" src="../../images/pop_big_bg.png"></image>
+        <image mode="widthFix" class="title_bg" src="../../images/title_bg.png"></image>
+        <image mode="heightFix" class="title_txt" src="../../images/title_setting.png"></image>
+        <view class="version">高级招募模拟器小程序版v{{version}}</view>
+        <button class="btn btn_close ease1" hover-class="btn_active" data-value="pop_setting_hidden" bindtap="closepop">
+            <image mode="widthFix" class="icon_close" src="../../images/close.png"></image>
+        </button>
+        <view class="nr">
+            <view class="tab_swiper_wrap btns">
+                <button class="tab_item btn ease1 {{current_tab==0?'current':''}}" hover-class="btn_active" data-current="0" bindtap="tap_tab_swiper">
+                    <image mode="widthFix" class="icon " src="../../images/icon_jieyin_90.png"></image>
+                    <view class="txt txt-shw-black-s">基本设置</view>
+                </button>
+                <button class="tab_item btn ease1 {{current_tab==3?'current':''}}" hover-class="btn_active" data-current="3" bindtap="tap_tab_swiper">
+                    <image mode="widthFix" class="icon " src="../../images/icon_cup_90.png"></image>
+                    <view class="txt txt-shw-black-s">V等级</view>
+                </button>
+                <button class="tab_item btn ease1 {{current_tab==2?'current':''}}" hover-class="btn_active" data-current="2" bindtap="tap_tab_swiper">
+                    <image mode="widthFix" class="icon " src="../../images/icon_ninjachange_90.png"></image>
+                    <view class="txt txt-shw-black-s">忍者配置</view>
+                </button>
+                <button class="tab_item btn ease1 {{current_tab==1?'current':''}}" hover-class="btn_active" data-current="1" bindtap="tap_tab_swiper">
+                    <image mode="widthFix" class="icon " src="../../images/icon_tv_90.png"></image>
+                    <view class="txt txt-shw-black-s">功能入口</view>
+                </button>
+            </view>
+            <swiper current="{{current_tab}}" class="swiper_wrap" duration="0" vertical="true" bindchange="change_swiper">
+                <swiper-item class="swiper_item" catchtouchmove='catchTouchMove'>
+                <!-- 基本配置 -->
+                    <scroll-view class="text_body" scroll-top="{{scrollTop}}" scroll-y="true" show-scrollbar="false">
+                        <!-- 高招返利开关 -->
+                        <view class="li txt-shw-black-s">
+                            <view class="dl">
+                                <view class="dt">高招返利</view>
+                                <view class="description">
+                                    <text class="text_css">1、5、9月上架新S忍，3、7、11月上架新A忍。</text>
+                                </view>
+                            </view>
+                            <view class="dl_r">
+                                <switch type="checkbox" class="btn btn_switch" hover-class="btn_active" checked="{{isGaozhaofanli_s}}" data-rank="s" bindchange="gaozhaofanli_switch">
+                                    <view class="txt">S</view>
+                                    <image mode="widthFix" class="icon off" src="../../images/checkbox_off.png"></image>
+                                    <image mode="widthFix" class="icon on" src="../../images/checkbox_on.png"></image>
+                                </switch>
+                                <switch type="checkbox" class="btn btn_switch" hover-class="btn_active" checked="{{isGaozhaofanli_a}}" data-rank="a" bindchange="gaozhaofanli_switch">
+                                    <view class="txt">A</view>
+                                    <image mode="widthFix" class="icon off" src="../../images/checkbox_off.png"></image>
+                                    <image mode="widthFix" class="icon on" src="../../images/checkbox_on.png"></image>
+                                </switch>
+                            </view>
+                        </view>
+                        <!-- 隐藏机制开关 -->
+                        <view class="li txt-shw-black-s">
+                            <view class="dl">
+                                <view class="dt">隐藏机制</view>
+                                <view class="description">
+                                    <text class="text_css">40抽必出一组新A，50抽必出一组S，开启或关闭时会重置次数。</text>
+                                </view>
+                            </view>
+                            <view class="dl_r">
+                                <switch type="checkbox" class="btn btn_switch" hover-class="btn_active" checked="{{isYincangjizhi}}" bindchange="yincangjizhi_switch">
+                                    <view class="txt"></view>
+                                    <image mode="widthFix" class="icon off" src="../../images/checkbox_off.png"></image>
+                                    <image mode="widthFix" class="icon on" src="../../images/checkbox_on.png"></image>
+                                </switch>
+                            </view>
+                        </view>
+                        <!-- 音量控制 -->
+                        <view class="li txt-shw-black-s">
+                            <view class="dl">
+                                <view class="dt">音效音量</view>
+                            </view>
+                            <view class="dl_r">
+                                <view class="slider_wrap"><slider class="volume_slider" value="{{se_volume}}" min="0" max="1" step="0.01" block-size="20" backgroundColor="rgba(68, 41, 19, .2)" bindchange="change_volume"></slider></view>
+                                <view class="btns btn_sound_wrap">
+                                    <button class="btn btn_mute ease1" hover-class="btn_active" bindtap="mute_volume">
+                                        <image mode="scaleToFill" class="bg" src="../../images/btn_bg_mini.png"></image>
+                                        <image mode="widthFix" class="icon" src="../../images/sound_off.png" hidden="{{se_volume!=0}}"></image>
+                                        <image mode="widthFix" class="icon" src="../../images/sound_on.png" hidden="{{se_volume==0}}"></image>
+                                    </button>
+                                </view>
+                            </view>
+                        </view>
+                        <!-- 加载字体 -->
+                        <view class="li txt-shw-black-s">
+                            <view class="dl">
+                                <view class="dt">字体设置</view>
+                                <view class="description">
+                                    <text class="text_css">字体包大小6MB，若下载失败请尝试关闭Wi-Fi使用移动数据流量。下载过程中不影响其他操作。</text>
+                                </view>
+                            </view>
+                            <view class='btns dl_r'>
+                                <button class='btn btn_setfont ease1' hover-class='btn_active' bindtap='setfont' disabled="{{btn_setfont_disabled}}">
+                                    <image class='image' mode='scaleToFill' src='../../images/btn_bg.png' hidden="{{btn_setfont_disabled}}"></image>
+                                    <image class='image image_disabled' mode='scaleToFill' src='../../images/btn_bg_grey.png' hidden="{{btn_setfont_disabled?false:true}}"></image>
+                                    <view class='text text_c'>{{setfont_btn_txt}}</view>
+                                </button>
+                            </view>
+                        </view>
+                        <!-- <view class="hr">奇怪的设置</view> -->
+                        <!-- 加速服务 -->
+                        <!-- <view class="li txt-shw-black-s">
+                            <view class="dl">
+                                <view class="dt">十连加速</view>
+                                <view class="description">
+                                    <text class="text_css">观看广告解锁（怎么会有介种东西😠）</text>
+                                </view>
+                            </view>
+                            <view class='btns dl_r'>
+                                <button class='btn btn_speedup ease1' hover-class='btn_active' bindtap='speedup' disabled="{{btn_speedup_disabled}}">
+                                    <image class='image' mode='scaleToFill' src='../../images/btn_bg.png' hidden="{{btn_speedup_disabled}}"></image>
+                                    <image class='image image_disabled' mode='scaleToFill' src='../../images/btn_bg_grey.png' hidden="{{btn_speedup_disabled?false:true}}"></image>
+                                    <view class='text text_c'><image class="icon_ad" mode="widthFix" src="../../images/icon_ad.png" hidden="{{btn_speedup_disabled}}"></image>{{speedup_btn_txt}}</view>
+                                </button>
+                            </view>
+                        </view> -->
+                        <!-- 100连抽体验版 -->
+                        <!-- <view class="li txt-shw-black-s">
+                            <view class="dl">
+                                <view class="dt">100连抽 beta</view>
+                                <view class="description">
+                                    <text class="text_css">受机能限制可能存在卡顿现象，极度影响体验。未来视情况优化，也可能关闭此功能。</text>
+                                </view>
+                            </view>
+                            <view class='dl_r'>
+                                <switch type="checkbox" class="btn btn_switch" hover-class="btn_active" checked="{{isOpen_100clik}}" bindchange="open_100clik_switch">
+                                    <view class="txt"></view>
+                                    <image mode="widthFix" class="icon off" src="../../images/checkbox_off.png"></image>
+                                    <image mode="widthFix" class="icon on" src="../../images/checkbox_on.png"></image>
+                                </switch>
+                            </view>
+                        </view> -->
+                    </scroll-view>
+                </swiper-item>
+                <swiper-item class="swiper_item" catchtouchmove='catchTouchMove'>
+                <!-- 功能入口 -->
+                    <scroll-view class="text_body" scroll-y="true" show-scrollbar="false">
+                        <view class="li libtns">
+                        <scroll-view class="libtns_scroll" scroll-x="true" show-scrollbar="false">
+                            <button class="btn btn_notice" hover-class='btn_active' data-value="pop_notice_hidden" bindtap="openpop">
+                                <image class='icon icon_notice' mode='scaleToFill' src='../../images/icon_gonggao_90.png'></image>
+                                <view class="txt txt-shw-black-s">公告</view>
+                            </button>
+                            <button class="btn btn_info" hover-class='btn_active' data-value="pop_info_hidden" bindtap="openpop">
+                                <image class='icon icon_info' mode='scaleToFill' src='../../images/icon_paper_90.png'></image>
+                                <view class="txt txt-shw-black-s">关于</view>
+                            </button>
+                            <button class="btn btn_tucao" hover-class='btn_active' data-value=" " bindtap="gotofeed">
+                                <image class='icon icon_tucao' mode='scaleToFill' src='../../images/tucao.png'></image>
+                                <view class="txt txt-shw-black-s">吐槽</view>
+                            </button>
+                            <!-- <button class="btn btn_tucao" hover-class='btn_active' data-value=" " open-type="contact">
+                                <image class='icon icon_tucao' mode='scaleToFill' src='../../images/icon_kefu.png'></image>
+                                <view class="txt txt-shw-black-s">客服</view>
+                            </button> -->
+                            <!-- <button class="btn btn_guanzhu" hover-class='btn_active' data-value=" " bindtap="openpop">
+                                <image class='icon icon_weixin' mode='scaleToFill' src='../../images/icon_weixin.png'></image>
+                                <view class="txt txt-shw-black-s">关注</view>
+                            </button> -->
+                            <button class="btn btn_guanzhu" hover-class='btn_active' open-type="share">
+                                <image class='icon icon_weixin' mode='scaleToFill' src='../../images/icon_share.png'></image>
+                                <view class="txt txt-shw-black-s">分享</view>
+                            </button>
+                            <navigator class="btn btn_guanzhu" hover-class='btn_active' url="../logs/logs">
+                                <image class='icon icon_weixin' mode='scaleToFill' src='../../images/icon_files_90.png'></image>
+                                <view class="txt txt-shw-black-s">日志</view>
+                            </navigator>
+                        </scroll-view>
+                        </view>
+                        <ad-custom unit-id="adunit-fe3b1e70505b3229"></ad-custom>
+                        <!-- <ad unit-id="adunit-63c54c1a91761a6d"></ad> -->
+                    </scroll-view>
+                </swiper-item>
+                <swiper-item class="swiper_item" catchtouchmove='catchTouchMove'>
+                <!-- 忍者配置 -->
+                    <view class="ninjasetting_con">
+                      <swiper current="{{current_tab_1}}" class="part_left" duration="0" vertical="true" bindchange="scrollToTop" hidden="{{current_tab!=2}}">
+                        <swiper-item catchtouchmove="catchTouchMove">
+                          <scroll-view class="text_body" scroll-top="{{scrollTop}}" scroll-y="true" show-scrollbar="false">
+                          <view class="ninja_selectable_list">
+                              <block wx:for="{{ninjaSelectable.ninjalist_s}}" wx:for-item="itemName" wx:key="index">
+                                  <template is="item_ninjaselectable" data="{{urlName:url_charactors,curS:ninjalist_s[0]['ninjaid'],curA:ninjalist_a[0]['ninjaid'],nowS:ninjalist_s_selectnow[0]['ninjaid'],nowA:ninjalist_a_selectnow[0]['ninjaid'],index:index,...itemName}}"></template>
+                              </block>
+                          </view>
+                          </scroll-view>
+                        </swiper-item>
+                        <swiper-item catchtouchmove="catchTouchMove">
+                          <scroll-view class="text_body" scroll-top="{{scrollTop}}" scroll-y="true" show-scrollbar="false">
+                          <view class="ninja_selectable_list">
+                              <block wx:for="{{ninjaSelectable.ninjalist_a}}" wx:for-item="itemName" wx:key="index">
+                                  <template is="item_ninjaselectable" data="{{urlName:url_charactors,curS:ninjalist_s[0]['ninjaid'],curA:ninjalist_a[0]['ninjaid'],nowS:ninjalist_s_selectnow[0]['ninjaid'],nowA:ninjalist_a_selectnow[0]['ninjaid'],index:index,...itemName}}"></template>
+                              </block>
+                          </view>
+                          </scroll-view>
+                        </swiper-item>
+                      </swiper>
+                      <view class="part_right">
+                        <view class="tabs btns">
+                          <button class="btn ease1 tab_item {{current_tab_1==0?'current':''}}" hover-class="btn_active" data-current="0" bindtap="tap_tab_swiper_1">
+                            <image mode="scaleToFill" class="btn_bg btn_bg_def" src="../../images/ninjasetting_tab_bg_default.png"></image>
+                            <image mode="scaleToFill" class="btn_bg btn_bg_cur" src="../../images/ninjasetting_tab_bg_current.png"></image>
+                            <image mode="widthFix" class="arrow" src="../../images/small_hand.png"></image>
+                            <view class="icon icon_a_new">
+                                <image class='image_bg' mode='widthFix' src='../../images/piece_bg.png'></image>
+                                <view class="img img" style="background-image:url({{url_charactors}});background-position:{{ninjalist_s_selectnow[0].p_x}}rpx {{ninjalist_s_selectnow[0].p_y}}rpx;"></view>
+                                <view class='fg'>
+                                    <image class='image_fg' mode='widthFix' src='../../images/piece_fg.png'></image>
+                                    <image class='image_rank' src='../../images/{{ninjalist_s_selectnow[0].ninjarank}}.png'></image>
+                                </view>
+                            </view>
+                            <view class="info"><view class="bt yellow">当前S忍</view>{{ninjalist_s_selectnow[0].ninjaname}}</view>
+                          </button>
+                          <button class="btn ease1 tab_item {{current_tab_1==1?'current':''}}" hover-class="btn_active" data-current="1" bindtap="tap_tab_swiper_1">
+                            <image mode="scaleToFill" class="btn_bg btn_bg_def" src="../../images/ninjasetting_tab_bg_default.png"></image>
+                            <image mode="scaleToFill" class="btn_bg btn_bg_cur" src="../../images/ninjasetting_tab_bg_current.png"></image>
+                            <image mode="widthFix" class="arrow" src="../../images/small_hand.png"></image>
+                            <view class="icon icon_a_new">
+                                <image class='image_bg' mode='widthFix' src='../../images/piece_bg.png'></image>
+                                <view class="img img" style="background-image:url({{url_charactors}});background-position:{{ninjalist_a_selectnow[0].p_x}}rpx {{ninjalist_a_selectnow[0].p_y}}rpx;"></view>
+                                <view class='fg'>
+                                    <image class='image_fg' mode='widthFix' src='../../images/piece_fg.png'></image>
+                                    <image class='image_rank' src='../../images/{{ninjalist_a_selectnow[0].ninjarank}}.png'></image>
+                                </view>
+                            </view>
+                            <view class="info"><view class="bt yellow">当前A忍</view>{{ninjalist_a_selectnow[0].ninjaname}}</view>
+                          </button>
+                        </view>
+                        <view class="part_right_2">
+                          <view class="description txt-shw-black-s" bindtap="scrollToTop">按确定键生效，同时重置次数</view>
+                          <view class="btns submit_area">
+                              <button class="btn ease1 btn_setninja" hover-class="btn_active" bindtap="change_ninja" disabled="{{ninjalist_s[0]['ninjaid'] == ninjalist_s_selectnow[0]['ninjaid'] && ninjalist_a[0]['ninjaid'] == ninjalist_a_selectnow[0]['ninjaid']?true:''}}">
+                                  <image class='image' mode='scaleToFill' src='../../images/btn_bg_grey.png' hidden="{{ninjalist_s[0]['ninjaid'] == ninjalist_s_selectnow[0]['ninjaid'] && ninjalist_a[0]['ninjaid'] == ninjalist_a_selectnow[0]['ninjaid']?false:true}}"></image>
+                                  <image class='image' mode='scaleToFill' src='../../images/btn_bg.png' hidden="{{ninjalist_s[0]['ninjaid'] == ninjalist_s_selectnow[0]['ninjaid'] && ninjalist_a[0]['ninjaid'] == ninjalist_a_selectnow[0]['ninjaid']?true:''}}"></image>
+                                  <view class="text text_c">确定</view>
+                              </button>
+                          </view>
+                        </view>
+                      </view>
+                    </view>
+                </swiper-item>
+                <swiper-item class="swiper_item" catchtouchmove="catchTouchMove">
+                <!-- V等级配置 -->
+                    <view class="vlevel_con">
+                        <view class="part_left">
+                            <image mode="widthFix" class="part_left_bg" src="../../images/v_bg.png"></image>
+                            <view class="infos txt-shw-black-s {{v_current == v_now?'':'change'}}">
+                                <view class="txt ease1">当前等级</view>
+                                <view class="number ease1">
+                                    <image class="icon icon_v" mode="widthFix" src="../../images/v.png"></image>
+                                    <image class="icon icon_v" mode="widthFix" src="../../images/{{v_current_shi}}.png" hidden="{{v_current_shi == '0'? 'true':''}}"></image>
+                                    <image class="icon icon_v" mode="widthFix" src="../../images/{{v_current_ge}}.png"></image>
+                                </view>
+                                <view class="level_change" hidden="{{v_current == v_now?'true':''}}">
+                                    <image class="icon icon_arrow" mode="scaleToFill" src="../../images/page_arrow.png"></image>
+                                    <image class="icon icon_v" mode="widthFix" src="../../images/v.png"></image>
+                                    <image class="icon icon_v" mode="widthFix" src="../../images/{{v_now_shi}}.png" hidden="{{v_now_shi == '0'? 'true':''}}"></image>
+                                    <image class="icon icon_v" mode="widthFix" src="../../images/{{v_now_ge}}.png"></image>
+                                </view>
+                            </view>
+                        </view>
+                        <view class="part_right">
+                            <view class="part_right_01 txt-shw-black-s">
+                                <view class="description">V等级对应返利赠送碎片数量</view>
+                                <view class="tr" style=" font-weight: bold;">
+                                    <view class="td">V等级</view>
+                                    <view class="td">100次赠送</view>
+                                    <view class="td">50次赠送</view>
+                                </view>
+                                <view class="tr {{v_current>=0 && v_current<=4?'light':''}}">
+                                    <image mode="scaleToFill" class="cur_arrow" src="../../images/page_arrow.png"></image>
+                                    <view class="td">V0~V4</view>
+                                    <view class="td">
+                                        <image mode="widthFix" class="icon" src="../../images/s.png"></image>×25
+                                    </view>
+                                    <view class="td">
+                                        <image mode="widthFix" class="icon" src="../../images/a.png"></image>×10
+                                    </view>
+                                </view>
+                                <view class="tr {{v_current>=5 && v_current<=9?'light':''}}">
+                                    <image mode="scaleToFill" class="cur_arrow" src="../../images/page_arrow.png"></image>
+                                    <view class="td">V5~V9</view>
+                                    <view class="td">
+                                        <image mode="widthFix" class="icon" src="../../images/s.png"></image>×28
+                                    </view>
+                                    <view class="td">
+                                        <image mode="widthFix" class="icon" src="../../images/a.png"></image>×11
+                                    </view>
+                                </view>
+                                <view class="tr {{v_current>=10 && v_current<=14?'light':''}}">
+                                    <image mode="scaleToFill" class="cur_arrow" src="../../images/page_arrow.png"></image>
+                                    <view class="td">V10~V14</view>
+                                    <view class="td">
+                                        <image mode="widthFix" class="icon" src="../../images/s.png"></image>×33
+                                    </view>
+                                    <view class="td">
+                                        <image mode="widthFix" class="icon" src="../../images/a.png"></image>×13
+                                    </view>
+                                </view>
+                                <view class="tr {{v_current==15?'light':''}}">
+                                    <image mode="scaleToFill" class="cur_arrow" src="../../images/page_arrow.png"></image>
+                                    <view class="td">V15</view>
+                                    <view class="td">
+                                        <image mode="widthFix" class="icon" src="../../images/s.png"></image>×38
+                                    </view>
+                                    <view class="td">
+                                        <image mode="widthFix" class="icon" src="../../images/a.png"></image>×15
+                                    </view>
+                                </view>
+                            </view>
+                            <view class="part_right_02">
+                                <slider class="v_slider" value="{{v_current}}" min="0" max="15" step="1" block-size="20" backgroundColor="rgba(68, 41, 19, .2)" bindchanging="v_changing" bindchange="v_changing"></slider>
+                                <view class="description txt-shw-black-s">拖动滑块调整等级，按确定键生效，同时重置次数</view>
+                                <view class="btns">
+                                    <button class="btn ease1 btn_setvlevel" hover-class="btn_active" bindtap="v_change" disabled="{{v_current == v_now?'true':''}}">
+                                        <image class='image' mode='scaleToFill' src='../../images/btn_bg_grey.png' hidden="{{v_current == v_now?false:true}}"></image>
+                                        <image class='image' mode='scaleToFill' src='../../images/btn_bg.png' hidden="{{v_current == v_now?'true':''}}"></image>
+                                        <view class="text text_c">确定</view>
+                                    </button>
+                                </view>
+                            </view>
+                        </view>
+                    </view>
+                </swiper-item>
+            </swiper>
+        </view>
+    </view>
+    <!-- 弹窗 公告 -->
+    <view class='pop_mask ease3 {{pop_notice_hidden? "hide":" "}}'></view>
+    <view class='pop pop_big pop_notice ease3 {{pop_notice_hidden? "hide":" "}}'>
+        <image mode="widthFix" class="title_bg_cloud" src="../../images/title_bg_cloud.png"></image>
+        <image mode="widthFix" class="pop_bg" src="../../images/pop_big_bg.png"></image>
+        <image mode="widthFix" class="title_bg" src="../../images/title_bg.png"></image>
+        <image mode="heightFix" class="title_txt" src="../../images/title_notice.png"></image>
+        <button class="btn btn_close ease1" hover-class="btn_active" data-value="pop_notice_hidden" bindtap="closepop">
+            <image mode="widthFix" class="icon_close" src="../../images/close.png"></image>
+        </button>
+        <scroll-view class="text_body" scroll-y="true" show-scrollbar="false">
+            <view class="padding">
+                <rich-text class="rich_text" nodes="{{text_notice}}"></rich-text>
+            </view>
+        </scroll-view>
+    </view>
+    <!-- 弹窗 信息 -->
+    <view class='pop_mask ease3 {{pop_info_hidden? "hide":" "}}'></view>
+    <view class='pop pop_big pop_info ease3 {{pop_info_hidden? "hide":" "}}'>
+        <image mode="widthFix" class="title_bg_cloud" src="../../images/title_bg_cloud.png"></image>
+        <image mode="widthFix" class="pop_bg" src="../../images/pop_big_bg.png"></image>
+        <image mode="widthFix" class="title_bg" src="../../images/title_bg.png"></image>
+        <image mode="heightFix" class="title_txt" src="../../images/title_info.png"></image>
+        <button class="btn btn_close ease1" hover-class="btn_active" data-value="pop_info_hidden" bindtap="closepop">
+            <image mode="widthFix" class="icon_close" src="../../images/close.png"></image>
+        </button>
+        <scroll-view class="text_body" scroll-y="true" show-scrollbar="false">
+            <view class="padding">
+                <text>关于高级招募模拟器\n\n</text>
+                <text>1、本程序没有切换10次出整卡功能，用于高级招募数据预测和统计，也可用于鉴定欧皇和非酋。\n</text>
+                <text>2、本程序参照官方已公布概率数据，如下：<text class="red">{{gailv_s}}%</text>概率出现S级忍者碎片，<text class="red">{{gailv_a}}%</text>概率出现A级忍者碎片。\n</text>
+                <text>3、关于出现的碎片数量，因没有官方数据参考，则按均分概率处理。\n</text>
+                <text>4、素材源于腾讯《火影忍者手游》，非官方出品，仅供娱乐，请勿当真！\n</text>
+                <text></text>
+                <text>\n\n</text>
+                <view class="qrcode_wrap">
+                    <view class="qrcode_item"><image mode="widthFix" style="width: 100%;" src="../../images/qrcode_gongzhonghao.jpg" show-menu-by-longpress="true"></image><view>长按二维码关注我</view></view>
+                </view>
+                <text>\n</text>
+                <view style="text-align: center;">
+                    <text class="">爱火影爱游戏的某熊仔\n</text>
+                    <text class="">2022年7月12日\n</text>
+                </view>
+                <official-account></official-account>
+            </view>
+        </scroll-view>
+    </view>
+
+    <!-- 小弹窗 信息 -->
+    <view class='pop_mask ease3 {{pop_small_hidden? "hide":" "}}'></view>
+    <view class='pop pop_small pop_info ease3 {{pop_small_hidden? "hide":" "}}'>
+        <image mode="widthFix" class="pop_bg" src="../../images/pop_small_bg.png"></image>
+        <view class="pop_small_bt txt-shw-black">提示</view>
+        <button class="btn btn_close ease1" hover-class="btn_active" data-value="pop_small_hidden" bindtap="closepop">
+            <image mode="widthFix" class="icon_close" src="../../images/close.png"></image>
+        </button>
+        <scroll-view class="text_body" scroll-y="true" show-scrollbar="false">
+            <view class="padding">
+                <text>关于高级招募模拟器\n</text>
+                <text>这是个小弹窗\n</text>
+                <text></text>
+                <text>\n\n</text>
+                <text>\n</text>
+                <view class="btns">
+                    <button class="btn ease1" hover-class="btn_active">
+                    <image mode="widthFix" class="image" src="../../images/btn_bg.png"></image>
+                    <view class="text">按钮</view>
+                    </button>
+                </view>
+            </view>
+        </scroll-view>
+    </view>
+
+    <!-- S高招返利 弹窗 -->
+    <view class='pop_mask pop_gift_mask ease3 {{pop_gift_s_hidden? "hide":" "}}' data-value="pop_gift_s_hidden" bindtap="closepop"></view>
+    <view class='pop pop_gift ease3 {{pop_gift_s_hidden? "hide":" "}}'>
+        <image mode="widthFix" class="title_bg_cloud" src="../../images/title_bg_cloud.png"></image>
+        <image mode="heightFix" class="gift_con_bg" src="../../images/gift_con_bg.png"></image>
+        <view class="zhezhao l"></view>
+        <view class="zhezhao r"></view>
+        <view class="zhezhao b"></view>
+        <image mode="widthFix" class="title_bg" src="../../images/title_bg.png"></image>
+        <image mode="heightFix" class="title_rank" src="../../images/rank_s.png"></image>
+        <image mode="heightFix" class="title_txt" src="../../images/title_shoufujiangli.png"></image>
+        <button class="btn btn_close ease1" hover-class="btn_active" data-value="pop_gift_s_hidden" bindtap="closepop">
+            <image mode="widthFix" class="icon_close" src="../../images/close.png"></image>
+        </button>
+        <view class="nr">
+            <view class="gifts btns">
+                <view class="count_num txt-shw-black-s">累计高级招募：<text class="yellow">{{num_count}}</text></view>
+                <block wx:for="{{gift_list_s}}" wx:key="index" wx:for-item="itemName">
+                    <template is="item_gift" data="{{...itemName}}" />
+                </block>
+            </view>
+        
+        </view>
+    </view>
+    <!-- A高招返利 弹窗 -->
+    <view class='pop_mask pop_gift_mask ease3 {{pop_gift_a_hidden? "hide":" "}}' data-value="pop_gift_a_hidden" bindtap="closepop"></view>
+    <view class='pop pop_gift ease3 {{pop_gift_a_hidden? "hide":" "}}'>
+        <image mode="widthFix" class="title_bg_cloud" src="../../images/title_bg_cloud.png"></image>
+        <image mode="heightFix" class="gift_con_bg" src="../../images/gift_con_bg.png"></image>
+        <view class="zhezhao l"></view>
+        <view class="zhezhao r"></view>
+        <view class="zhezhao b"></view>
+        <image mode="widthFix" class="title_bg" src="../../images/title_bg.png"></image>
+        <image mode="heightFix" class="title_rank" src="../../images/rank_a.png"></image>
+        <image mode="heightFix" class="title_txt" src="../../images/title_shoufujiangli.png"></image>
+        <button class="btn btn_close ease1" hover-class="btn_active" data-value="pop_gift_a_hidden" bindtap="closepop">
+            <image mode="widthFix" class="icon_close" src="../../images/close.png"></image>
+        </button>
+        <view class="nr">
+            <view class="gifts btns">
+                <view class="count_num txt-shw-black-s">累计高级招募：<text class="yellow">{{num_count}}</text></view>
+                <block wx:for="{{gift_list_a}}" wx:key="index" wx:for-item="itemName">
+                    <template is="item_gift" data="{{...itemName}}" />
+                </block>
+            </view>
+        
+        </view>
+    </view>
+
+
+
+</view>
+<!-- 视图容器 end -->
+
+
+
+
+
+
+
+<!-- 碎片模板 -->
+<template name="item_suipian">
+    <view class="animated fadeIn item_wrap" style="animation-delay:calc({{delaytime}}*{{index}}ms)">
+        <view class="item item_{{rank_item}} {{detail.new}}">
+            <image class='image_bg' mode='widthFix' src='../../images/piece_bg.png'></image>
+            <view class="img img" style="background-image:url({{urlName}});background-position:{{detail.p_x}}rpx {{detail.p_y}}rpx;"></view>
+            <view class='fg'>
+                <image class='image_fg' mode='widthFix' src='../../images/piece_fg.png'></image>
+                <text class='num txt-shw-black-s'>{{num_suipian}}</text>
+                <!-- <image class='image_rank' src='../../images/{{rank_item}}.png'></image> -->
+                <image class="light s_light" mode="widthFix" src="../../images/s_light.png"></image>
+            </view>
+            <view class='yanwu' style="animation-delay:calc({{delaytime}}*{{index}}ms)"></view>
+        </view>
+        <view class='text txt-shw-black-s text_name {{detail.longname}}'><text>{{detail.suipianname}}</text></view>
+        <view class='text txt-shw-black-s text_num'><text>({{detail.suipiannum}}/{{detail.suipianneed}})</text></view>
+    </view>
+</template>
+
+
+<!-- 高招返利宝箱模板 -->
+<template name="item_gift">
+    <button class="btn item {{status==1?'faguang':''}} {{status==2?'done':''}}" hover-class="btn_active" data-giftid="{{id}}" data-rank="{{rank}}" data-limit="{{limit}}" data-value="{{value}}" data-extra="{{extra}}" bindtap="getgift" disabled="{{status!=1?true:false}}">
+        <image mode="widthFix" class="icon icon_gift" src="../../images/icon_gift.png"></image>
+        <block wx:if="{{extra}}">
+        <image mode="aspectFit" class="extra" src="../../images/v{{extra}}_double.png"></image>
+        </block>
+        <image mode="widthFix" class="txt_bg" src="../../images/gift_txt_bg.png"></image>
+        <image mode="widthFix" class="yiling ease3" src="../../images/gift_yiling.png"></image>
+        <view class="txt txt-shw-black-s">招募<text class="yellow">{{limit}}</text>次</view>
+    </button>
+</template>
+
+
+<!-- 忍者配置头像模板 -->
+<template name="item_ninjaselectable">
+    <view class="animated fadeInDown item_wrap {{nowS == ninjaid || nowA == ninjaid?'now':''}} {{curS == ninjaid || curA == ninjaid?'cur':''}}" style="animation-delay:calc({{index}}*20ms)">
+        <button class="btn ease1 item item_{{ninjarank}}" hover-class="btn_active" data-rank="{{ninjarank}}" data-value="{{ninjaid}}" bindtap="select_ninja">
+            <image class='image_bg' mode='widthFix' src='../../images/piece_bg_default.png'></image>
+            <view class="img img" style="background-image:url({{urlName}});background-position:{{p_x}}rpx {{p_y}}rpx;"></view>
+            <view class='fg'>
+                <image class='image_fg' mode='widthFix' src='../../images/piece_fg_default.png'></image>
+                <image class='image_rank' src='../../images/{{ninjarank}}.png'></image>
+                <image class='light s_light' src='../../images/s_light.png'></image>
+            </view>
+            <image class="ninja_active" mode="widthFix" src="../../images/ninja_active.png"></image>
+            <image class="corner_tag" mode="widthFix" src="../../images/dengchang.png"></image>
+        </button>
+        <view class='text text_name {{longname}}'><text>{{ninjaname}}</text></view>
+    </view>
+</template>
+
+
