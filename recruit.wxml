@@ -57,6 +57,11 @@
     <!-- 背景图 -->
     <image class='bg' src='../../images/bg.jpg' mode="aspectFill"></image>
 
+    <!-- 特别声明 -->
+    <view class="txt-important txt-shw-black animated fadeIn" hidden="{{!loadcomplete}}" wx:if="{{cliktype==''}}">
+        <view>本程序是抽卡信息查询计算工具，不具备游戏功能</view>
+        <view>v{{version}}</view>
+    </view>
 
     <!-- 中央主体 -->
     <view class='box' style='font-family:{{fontfamily}} !important; transform:scale({{fixratio}});'>
@@ -67,6 +72,9 @@
             </block>
             <block wx:if="{{cliktype == 'shilian'}}">
                 <image mode='scaleToFill' class='img tishi_10' src='../../images/tishi_10.png'></image>
+            </block>
+            <block wx:if="{{cliktype == 'bailian'}}">
+                <image mode='scaleToFill' class='img tishi_10' src='../../images/tishi_100.png'></image>
             </block>
         </view>
 

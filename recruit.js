@@ -6,6 +6,12 @@ let zhanbi = {'s':0,'a':0,'b':0,'c':0};
  * fontfamily 当前字体，默认为空
  * animating 是否处于抽卡动画中，默认false，当为true时，主操作按钮和底部提示文字隐藏
  * 
+ * 设置界面四个tab对应序号：
+ * 0、基本设置；
+ * 3、V等级；
+ * 2、忍者配置；
+ * 1、功能入口
+ * 
  */
 let notice_textbody = `<h1 class="h1 red mb10">公告标题</h1>
 <p>1、公告文字</p>
@@ -19,6 +25,7 @@ let urls = [
 ];
 let url_charactors = urls[0].url;
 
+// 忍者碎片奖池
 let ninjaDB = {
     ninjalist_s: [
         {"ninjaid": "99999", "ninjaname": "漩涡鸣人[九喇嘛连结]", "suipianname": "九喇嘛鸣人碎片", "ninjarank": "s", "suipiannum": "0", "suipianneed": "100", "p_x": "-1056", "p_y": "0" }
@@ -52,9 +59,10 @@ let ninjaDB = {
         {"ninjaid": "90017", "ninjaname": "天天", "suipianname": "天天碎片", "ninjarank": "c", "suipiannum": "0", "suipianneed": "--", "p_x": "-336", "p_y": "-144" },
     ]
   };
+
+  // 忍者配置 可选忍者，集合历来所有高招S和高招A
 let ninjaSelectable = {
     ninjalist_s: [
-        {"ninjaid": "99999", "ninjaname": "漩涡鸣人[九喇嘛连结]", "suipianname": "九喇嘛鸣人碎片", "ninjarank": "s", "suipiannum": "0", "suipianneed": "100", "p_x": "-1056", "p_y": "0" },
         {"ninjaid": "90245", "ninjaname": "迈特凯[死门]", "suipianname": "死门凯碎片", "ninjarank": "s", "suipiannum": "0", "suipianneed": "100", "p_x": "-1008", "p_y": "0" },
         {"ninjaid": "90114", "ninjaname": "宇智波带土[忍界大战]", "suipianname": "忍战带土碎片", "ninjarank": "s", "suipiannum": "0", "suipianneed": "100", "p_x": "-960", "p_y": "0" },
         {"ninjaid": "90102", "ninjaname": "千手柱间[秽土转生]", "suipianname": "秽土柱间碎片", "ninjarank": "s", "suipiannum": "0", "suipianneed": "100", "p_x": "-912", "p_y": "0" },
@@ -294,7 +302,7 @@ Page({
 
     isYincangjizhi: false,
     pop_info_hidden:true,
-    pop_notice_hidden:false,
+    pop_notice_hidden:true,
     text_notice:notice_textbody,
     pop_setting_hidden:true,
     pop_gift_s_hidden:true,
@@ -781,7 +789,8 @@ Page({
     ninjalist.push(JSON.parse(JSON.stringify(that.data.ninjalist_a)));
     ninjalist.push(JSON.parse(JSON.stringify(that.data.ninjalist_b)));
     ninjalist.push(JSON.parse(JSON.stringify(that.data.ninjalist_c)));
-    //console.info(ninjalist);
+    console.info(ninjalist);
+    console.log(ninjaDB);
     for(var index = 0; index < items.length; index++){
         //console.log(items[index].detail.suipiannum,items[index].rank_item,items[index].img_index)
         switch ( items[index].rank_item ){
@@ -852,7 +861,7 @@ Page({
         // 清空数组
         items.splice(0, items.length);
         that.setData({
-            cliktype: 'shilian',
+            cliktype: 'bailian',
             delaytime:10,
             items: JSON.parse(JSON.stringify(items)),
             animating: true
@@ -881,6 +890,9 @@ Page({
             });
             console.log(that.data.list_scrollTop)
         };
+        // that.setData({
+        //     items: items
+        // });
         //需要对items再次更新一次数据，让碎片数显示的是最新的值
         var ninjalist = new Array();
         ninjalist.push(JSON.parse(JSON.stringify(that.data.ninjalist_s)));
@@ -1598,7 +1610,7 @@ Page({
 
         //获取远程配置json ，远程更新数据，包括 S和A忍者数据、公告的弹出、设置的弹出、SA返利开关
         wx.request({
-            url: needurl+'/ninjadata.json'+'?'+Math.random(),
+            url: needurl+'/ninjadata_new.json'+'?'+Math.random(),
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -1617,8 +1629,18 @@ Page({
                 // });
                 //console.log(s_Data)
                 //console.log(a_Data)
-                ninjaDB.ninjalist_s = JSON.parse(JSON.stringify(res.data.ninjalist_s));
-                ninjaDB.ninjalist_a = JSON.parse(JSON.stringify(res.data.ninjalist_a));
+                // 把JSON文件中的S忍者和A忍者碎片库写入到可选列表中
+                const remoteNinjalist_s = res.data.ninjalist_s;
+                const localNinjalist_s = ninjaSelectable.ninjalist_s;
+                ninjaSelectable.ninjalist_s = remoteNinjalist_s.concat(localNinjalist_s);
+                //console.log(ninjaSelectable.ninjalist_s);
+                const remoteNinjalist_a = res.data.ninjalist_a;
+                const localNinjalist_a = ninjaSelectable.ninjalist_a;
+                ninjaSelectable.ninjalist_a = remoteNinjalist_a.concat(localNinjalist_a);
+
+                // 把可选S中的第一个s、可选A中的第一个a连同JSON中的ninjalist_a2（副A）写入到奖池ninjaDB中；
+                ninjaDB.ninjalist_s = [ res.data.ninjalist_s[0]];
+                ninjaDB.ninjalist_a = [ ninjaSelectable.ninjalist_a[0], res.data.ninjalist_a2[0] ];
                 that.setData({
                     tongjilist_wrap_hidden: res.data.tongjilist_wrap_hidden,
                     pop_notice_hidden: res.data.pop_notice_hidden,
@@ -1628,8 +1650,11 @@ Page({
                     isGaozhaofanli_a: res.data.isGaozhaofanli_a,
                     text_notice: res.data.notice_textbody,
                     version: res.data.version,
-                    ninjalist_s: JSON.parse(JSON.stringify(res.data.ninjalist_s)),
-                    ninjalist_a: JSON.parse(JSON.stringify(res.data.ninjalist_a))
+                    ninjaSelectable:ninjaSelectable,
+                    ninjalist_s: res.data.ninjalist_s,
+                    ninjalist_a: ninjaDB.ninjalist_a,
+                    ninjalist_s_selectnow: ninjaDB.ninjalist_s,
+                    ninjalist_a_selectnow: ninjaDB.ninjalist_a
                 })
                 //console.log(ninjaDB.ninjalist_a);
                 console.log("请求成功！")
