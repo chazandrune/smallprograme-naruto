@@ -1,0 +1,7 @@
+<!--pages/index/index.wxml-->
+<view class='main'>
+<navigator class='enter' url='/pages/recruit/recruit'>高招模拟器</navigator>
+<navigator class='enter' url='/pages/ninjashare/ninjashare'>图图生成器</navigator>
+<!-- <official-account></official-account> -->
+</view>
+

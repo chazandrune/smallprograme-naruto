@@ -789,8 +789,7 @@ Page({
     ninjalist.push(JSON.parse(JSON.stringify(that.data.ninjalist_a)));
     ninjalist.push(JSON.parse(JSON.stringify(that.data.ninjalist_b)));
     ninjalist.push(JSON.parse(JSON.stringify(that.data.ninjalist_c)));
-    console.info(ninjalist);
-    console.log(ninjaDB);
+    //console.info(ninjalist);
     for(var index = 0; index < items.length; index++){
         //console.log(items[index].detail.suipiannum,items[index].rank_item,items[index].img_index)
         switch ( items[index].rank_item ){
@@ -890,9 +889,6 @@ Page({
             });
             console.log(that.data.list_scrollTop)
         };
-        // that.setData({
-        //     items: items
-        // });
         //需要对items再次更新一次数据，让碎片数显示的是最新的值
         var ninjalist = new Array();
         ninjalist.push(JSON.parse(JSON.stringify(that.data.ninjalist_s)));
@@ -1630,16 +1626,17 @@ Page({
                 //console.log(s_Data)
                 //console.log(a_Data)
                 // 把JSON文件中的S忍者和A忍者碎片库写入到可选列表中
-                const remoteNinjalist_s = res.data.ninjalist_s;
-                const localNinjalist_s = ninjaSelectable.ninjalist_s;
+                const remoteNinjalist_s = JSON.parse(JSON.stringify(res.data.ninjalist_s));
+                const localNinjalist_s = JSON.parse(JSON.stringify(ninjaSelectable.ninjalist_s));
                 ninjaSelectable.ninjalist_s = remoteNinjalist_s.concat(localNinjalist_s);
                 //console.log(ninjaSelectable.ninjalist_s);
-                const remoteNinjalist_a = res.data.ninjalist_a;
-                const localNinjalist_a = ninjaSelectable.ninjalist_a;
+                const remoteNinjalist_a = JSON.parse(JSON.stringify(res.data.ninjalist_a));
+                const localNinjalist_a = JSON.parse(JSON.stringify(ninjaSelectable.ninjalist_a));
                 ninjaSelectable.ninjalist_a = remoteNinjalist_a.concat(localNinjalist_a);
 
                 // 把可选S中的第一个s、可选A中的第一个a连同JSON中的ninjalist_a2（副A）写入到奖池ninjaDB中；
-                ninjaDB.ninjalist_s = [ res.data.ninjalist_s[0]];
+                // 注意这里JSON.parse和JSON.stringify 的使用，它们的作用是“深度复制”对象，如果直接用对象赋值，在内存中他们的数据是互通的，也就是说看似赋值实际只是指向作用，=两边的数据会发生同步，因此使用JSON序列化和解析函数，让这边互不干扰。
+                ninjaDB.ninjalist_s = [ ninjaSelectable.ninjalist_s[0]];
                 ninjaDB.ninjalist_a = [ ninjaSelectable.ninjalist_a[0], res.data.ninjalist_a2[0] ];
                 that.setData({
                     tongjilist_wrap_hidden: res.data.tongjilist_wrap_hidden,
@@ -1650,9 +1647,9 @@ Page({
                     isGaozhaofanli_a: res.data.isGaozhaofanli_a,
                     text_notice: res.data.notice_textbody,
                     version: res.data.version,
-                    ninjaSelectable:ninjaSelectable,
-                    ninjalist_s: res.data.ninjalist_s,
-                    ninjalist_a: ninjaDB.ninjalist_a,
+                    ninjaSelectable:JSON.parse(JSON.stringify(ninjaSelectable)),
+                    ninjalist_s: JSON.parse(JSON.stringify(res.data.ninjalist_s)),
+                    ninjalist_a: JSON.parse(JSON.stringify(ninjaDB.ninjalist_a)),
                     ninjalist_s_selectnow: ninjaDB.ninjalist_s,
                     ninjalist_a_selectnow: ninjaDB.ninjalist_a
                 })

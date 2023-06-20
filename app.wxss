@@ -1,0 +1,19 @@
+/**app.wxss**/
+/* @font-face {
+    font-family: "FZYHJW";
+    src: url("https://mopanda.gitee.io/css/FZYHJW.eot");
+    src: url("https://mopanda.gitee.io/css/FZYHJW.eot?#ie/*fix") format("embedded-opentype"),
+    url("https://mopanda.gitee.io/css/FZYHJW.woff") format("woff"),
+    url("https://mopanda.gitee.io/css/FZYHJW.ttf") format("truetype"),
+    url("https://mopanda.gitee.io/css/FZYHJW.svg#FZYHJW") format("svg");
+    font-style: normal;
+    font-weight: normal;
+} */
+
+.mb10{margin-bottom: 10rpx;}
+.mb20{margin-bottom: 20rpx;}
+.ease1{ transition: all 0.1s ease-in-out;}
+.ease3{ transition: all 0.3s cubic-bezier(.75,-0.58,.63,1.48);}
+
+
+

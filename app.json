@@ -1,0 +1,26 @@
+{
+  "pages": [
+    "pages/recruit/recruit",
+    "pages/index/index",
+    "pages/logs/logs"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "pageOrientation": "landscape",
+    "backgroundColor": "#000000",
+    "backgroundColorTop": "#000",
+    "backgroundColorBottom": "#000",
+    "navigationBarBackgroundColor": "#000000",
+    "navigationBarTitleText": "高级招募模拟器",
+    "navigationBarTextStyle": "white",
+    "navigationStyle": "custom",
+    "enablePullDownRefresh": false,
+    "onReachBottomDistance": 0
+  },
+  "networkTimeout": {
+    "request": 10000,
+    "downloadFile": 10000
+  },
+  "debug": true,
+  "sitemapLocation": "sitemap.json"
+}

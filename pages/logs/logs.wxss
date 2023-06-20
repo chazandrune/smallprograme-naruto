@@ -1,0 +1,19 @@
+.log_list {
+  display: flex;
+  flex-direction: column;
+  padding: 40rpx;
+}
+.log_item {
+  margin-bottom: 30rpx;
+}
+
+.text_body{ font-size: 12rpx; line-height: 18rpx; color: #000; }
+.rich_text .blank{ height: 20rpx; border:0;}
+.rich_text .h1{ font-size: 12rpx; }
+::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    color: transparent;
+    background-color: transparent;
+    display: none;
+  }

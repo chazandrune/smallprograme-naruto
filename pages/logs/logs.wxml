@@ -1,0 +1,14 @@
+<!--logs.wxml-->
+<view class="log_list">
+    <view class="text_body">
+        <block wx:for="{{loglist}}" wx:key="index" wx:for-item="item">
+            <view class="log_item">
+                <rich-text class="rich_text" nodes="{{item}}"></rich-text>
+            </view>
+        </block>
+    </view>
+  
+    <!-- <navigator class="nav_item" target='self' url="../recruit/recruit">返回高级招募模拟器</navigator> -->
+
+</view>
+

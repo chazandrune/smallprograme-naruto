@@ -444,10 +444,10 @@
                                 <image class='icon icon_tucao' mode='scaleToFill' src='../../images/tucao.png'></image>
                                 <view class="txt txt-shw-black-s">吐槽</view>
                             </button>
-                            <!-- <button class="btn btn_tucao" hover-class='btn_active' data-value=" " open-type="contact">
+                            <button class="btn btn_tucao" hover-class='btn_active' data-value=" " open-type="contact">
                                 <image class='icon icon_tucao' mode='scaleToFill' src='../../images/icon_kefu.png'></image>
                                 <view class="txt txt-shw-black-s">客服</view>
-                            </button> -->
+                            </button>
                             <!-- <button class="btn btn_guanzhu" hover-class='btn_active' data-value=" " bindtap="openpop">
                                 <image class='icon icon_weixin' mode='scaleToFill' src='../../images/icon_weixin.png'></image>
                                 <view class="txt txt-shw-black-s">关注</view>

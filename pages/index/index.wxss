@@ -1,0 +1,21 @@
+/* pages/index/index.wxss */
+.main{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+}
+.enter{
+  display: inline-block;
+  margin: auto;
+}
+
+
+
+
+
+
+
+
+
