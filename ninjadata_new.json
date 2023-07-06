@@ -3,14 +3,15 @@
     "pop_notice_hidden": true,
     "pop_setting_hidden": true,
     "current_tab":3,
-    "isGaozhaofanli_s": true,
-    "isGaozhaofanli_a": false,
-    "notice_textbody": "<h1 class='h1 red mb10'>更新内容</h1><p>1、新增可选忍者：2023年5月高招S忍 漩涡鸣人[九喇嘛连结]</p><p>2、修正重置操作没有对高招S和高招A忍者碎片数量清零的bug</p><p>3、修正100连抽时提示文字错误的bug</p><p></p>",
-    "version":"1.4.3.20230509",
+    "isGaozhaofanli_s": false,
+    "isGaozhaofanli_a": true,
+    "notice_textbody": "<h1 class='h1 red mb10'>更新内容</h1><p>1、新增可选忍者：2023年7月高招A忍 长门[青年]</p><p></p>",
+    "version":"1.4.3.20230629",
     "ninjalist_s": [
         {"ninjaid": "90312", "ninjaname": "漩涡鸣人[九喇嘛连结]", "suipianname": "九喇嘛鸣人碎片", "ninjarank": "s", "suipiannum": "0", "suipianneed": "100", "p_x": "-1056", "p_y": "0" }
     ],
     "ninjalist_a": [
+        {"ninjaid": "99998", "ninjaname": "长门[青年]", "suipianname": "青年长门碎片", "ninjarank": "a", "suipiannum": "0", "suipianneed": "40", "p_x": "-1104", "p_y": "-48", "new":"new" }
     ],
     "ninjalist_a2": [
         {"ninjaid": "90034", "ninjaname": "我爱罗[疾风传]", "suipianname": "疾风传我爱罗碎片", "ninjarank": "a", "suipiannum": "0", "suipianneed": "40", "p_x": "-48", "p_y": "-192", "longname": "text_l" }
